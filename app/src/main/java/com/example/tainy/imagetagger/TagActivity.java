@@ -1,8 +1,11 @@
 package com.example.tainy.imagetagger;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -17,7 +20,8 @@ import android.os.Build;
 import android.widget.EditText;
 
 
-public class TagActivity extends ActionBarActivity {
+public class TagActivity extends ActionBarActivity
+{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,9 @@ public class TagActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment
+    {
+        private String imagePath = null;
 
         public PlaceholderFragment() {
         }
@@ -70,11 +76,14 @@ public class TagActivity extends ActionBarActivity {
             return rootView;
         }
 
+
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void onResume()
         {
             super.onResume();
             Intent intent = this.getActivity().getIntent();
+            this.imagePath = intent.getClipData().getItemAt(0).getUri().getPath();
             AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
             LayoutInflater inflater = LayoutInflater.from(this.getActivity());
             View view = inflater.inflate(R.layout.tag_input_view,null);
@@ -95,7 +104,11 @@ public class TagActivity extends ActionBarActivity {
 
         private void saveTag(String tag)
         {
-
+            PreferenceManager manager = (PreferenceManager) this.getActivity().getSharedPreferences("TagActivity",MODE_PRIVATE);
+            SharedPreferences.Editor editor = manager.getSharedPreferences().edit();
+            String newPath = manager.getSharedPreferences().getString(tag,"")+","+imagePath;
+            editor.putString(tag,newPath);
+            editor.commit();
         }
     }
 }
