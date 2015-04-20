@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -173,20 +175,24 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     public class TagImageAdapter extends BaseAdapter
     {
-        String[] pathArray;
+        List<String> pathArray = new ArrayList<String>();
         public TagImageAdapter(String[] tags)
         {
-            this.pathArray = tags;
+            for(String tag:tags)
+            {
+                if(tag !=null && !tag.isEmpty())
+                    pathArray.add(tag);
+            }
         }
         @Override
         public int getCount()
         {
-            return pathArray.length;
+            return pathArray.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return pathArray[position];
+            return pathArray.get(position);
         }
 
         @Override
@@ -202,9 +208,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             TextView tv_path = (TextView) row.findViewById(R.id.image_path);
             ImageView iv_snap = (ImageView) row.findViewById(R.id.image_snap);
 
-            tv_path.setText(pathArray[position]);
-            if(!pathArray[position].isEmpty())
-                iv_snap.setImageDrawable(Drawable.createFromPath(pathArray[position]));
+            tv_path.setText(pathArray.get(position));
+            if(!pathArray.get(position).isEmpty())
+                iv_snap.setImageDrawable(Drawable.createFromPath(pathArray.get(position)));
 
             return row;
 
