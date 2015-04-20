@@ -210,7 +210,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             tv_path.setText(pathArray.get(position));
             if(!pathArray.get(position).isEmpty())
-                iv_snap.setImageDrawable(Drawable.createFromPath(pathArray.get(position)));
+            {
+                Drawable drawable = Drawable.createFromPath(pathArray.get(position));
+                iv_snap.setImageDrawable(drawable);
+
+            }
 
             return row;
 
