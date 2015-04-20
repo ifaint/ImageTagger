@@ -21,12 +21,21 @@
         android:layout_alignParentRight="true"
         />
 
+    <LinearLayout
+        android:id="@+id/tag_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/search_tag_button"
+        >
+    </LinearLayout>
+
 
     <ListView
-        android:id="@+id/android.R.id.list"
+        android:id="@+id/image_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/search_tag_button"
+        android:layout_below="@id/tag_container"
         />
 
 

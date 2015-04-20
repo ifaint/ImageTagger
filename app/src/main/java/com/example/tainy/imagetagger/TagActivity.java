@@ -2,10 +2,14 @@ package com.example.tainy.imagetagger;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -60,8 +64,7 @@ public class TagActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment
-    {
+    public static class PlaceholderFragment extends Fragment {
         private String imagePath = null;
 
         public PlaceholderFragment() {
@@ -69,32 +72,30 @@ public class TagActivity extends ActionBarActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState)
-        {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_tag, container, false);
-            Log.d("in TagActivity","onCreateView");
+            Log.d("in TagActivity", "onCreateView");
             return rootView;
         }
 
 
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
-        public void onResume()
-        {
+        public void onResume() {
             super.onResume();
             Intent intent = this.getActivity().getIntent();
-            this.imagePath = intent.getClipData().getItemAt(0).getUri().getPath();
+            Uri uri = intent.getClipData().getItemAt(0).getUri();
+            this.imagePath = getRealPathFromURI(this.getActivity(), uri);
             AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
             LayoutInflater inflater = LayoutInflater.from(this.getActivity());
-            View view = inflater.inflate(R.layout.tag_input_view,null);
+            View view = inflater.inflate(R.layout.tag_input_view, null);
             final EditText et_tag = (EditText) view.findViewById(R.id.tag_name);
             builder.setTitle("input the tag");
             builder.setView(view);
             builder.setNegativeButton(android.R.string.cancel, null);
-            builder.setPositiveButton(android.R.string.ok,new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
+                public void onClick(DialogInterface dialog, int which) {
                     String tag = et_tag.getText().toString();
                     saveTag(tag);
                 }
@@ -102,13 +103,35 @@ public class TagActivity extends ActionBarActivity
             builder.create().show();
         }
 
-        private void saveTag(String tag)
-        {
-            PreferenceManager manager = (PreferenceManager) this.getActivity().getSharedPreferences("TagActivity",MODE_PRIVATE);
-            SharedPreferences.Editor editor = manager.getSharedPreferences().edit();
-            String newPath = manager.getSharedPreferences().getString(tag,"")+","+imagePath;
-            editor.putString(tag,newPath);
+        /**
+         * @param tag save the tag:imagePath pair in below format:
+         *            tag1:path1,path2,path3...
+         *            tag2:path4,path1,path6
+         *            tag3:path1,path10...
+         */
+        private void saveTag(String tag) {
+            SharedPreferences sp = this.getActivity().getSharedPreferences("TagActivity", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            String newPath = sp.getString(tag, "") + "," + imagePath;
+            editor.putString(tag, newPath);
             editor.commit();
+        }
+
+        public String getRealPathFromURI(Context context, Uri contentUri) {
+            Cursor cursor = null;
+            try {
+                String[] proj = {MediaStore.Images.Media.DATA};
+                cursor = context.getContentResolver().query(contentUri, proj, null,
+                        null, null);
+                int column_index = cursor
+                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                return cursor.getString(column_index);
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
         }
     }
 }
