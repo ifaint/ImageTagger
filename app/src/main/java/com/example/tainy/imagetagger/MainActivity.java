@@ -241,7 +241,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setAction(Intent.ACTION_SEND);
                         Uri uri = Uri.fromFile(file);
                         intent.setDataAndType(uri, "image/*");
                         startActivity(intent);
