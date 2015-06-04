@@ -1,8 +1,10 @@
 package com.example.tainy.imagetagger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Display;
@@ -30,6 +32,7 @@ import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +52,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init3rdParty();
+//        init3rdParty();
 
         setContentView(R.layout.activity_main);
         EditText et_tag = (EditText) this.findViewById(R.id.search_tag_name);
@@ -106,7 +109,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     {
         super.onResume();
         showTags();
-        doSomethingonCloud();
 
     }
 
@@ -189,13 +191,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
-/*        String tag = v.getTag().toString();
+        String tag = v.getTag().toString();
         SharedPreferences sp = this.getSharedPreferences("TagActivity",MODE_PRIVATE);
         String pathList = sp.getString(tag,"");
+        pathList = pathList.substring(1);
         String[] pathArray = pathList.split(",");
         adapter = new TagImageAdapter(pathArray);
-        list.setAdapter(adapter);*/
-        retrieveDataFromCloud();
+        list.setAdapter(adapter);
 
     }
 
@@ -223,7 +225,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent)
+        public View getView(final int position, View convertView, ViewGroup parent)
         {
             LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
             View row = inflater.inflate(R.layout.tag_image_row,null);
@@ -232,7 +234,21 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             tv_path.setText(pathArray[position]);
             if(!pathArray[position].isEmpty())
+            {
+                final File file = new File(pathArray[position]);
                 iv_snap.setImageDrawable(Drawable.createFromPath(pathArray[position]));
+                iv_snap.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        Uri uri = Uri.fromFile(file);
+                        intent.setDataAndType(uri, "image/*");
+                        startActivity(intent);
+                    }
+                });
+
+            }
 
             return row;
 
