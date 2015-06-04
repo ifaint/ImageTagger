@@ -19,11 +19,29 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVAnalytics;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.SaveCallback;
+
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+
+    public static final String APPLICATION_ID = "aw5b9j4i4f41fgwj1s7z97u6q3588fa0afulvgvcz7kaz0id";
+    public static final String APP_KEY        = "e8e9q0v471yad51mwerfv43or9suv8aalh8cwhtyiy5una0s";
+    public static final String MASTER_KEY     = "ur5xkd716zu3xidwc8sky6amkdrsv8behfq4tjp8t577fbbq";
+
     LinearLayout ll_tags;
     TagImageAdapter adapter;
     ListView list;
@@ -31,6 +49,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        init3rdParty();
+
         setContentView(R.layout.activity_main);
         EditText et_tag = (EditText) this.findViewById(R.id.search_tag_name);
         final String name = et_tag.getText().toString();
@@ -48,9 +68,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     }
 
+    private void init3rdParty()
+    {
+        AVOSCloud.initialize(this, APPLICATION_ID, APP_KEY);
+    }
+
     private void search(String name)
     {
-        SharedPreferences sp = this.getSharedPreferences("TagActivity",MODE_PRIVATE);
+//        SharedPreferences sp = this.getSharedPreferences("TagActivity",MODE_PRIVATE);
+        retrieveDataFromCloud();
 
     }
 
@@ -80,6 +106,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     {
         super.onResume();
         showTags();
+        doSomethingonCloud();
 
     }
 
@@ -162,12 +189,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
-        String tag = v.getTag().toString();
+/*        String tag = v.getTag().toString();
         SharedPreferences sp = this.getSharedPreferences("TagActivity",MODE_PRIVATE);
         String pathList = sp.getString(tag,"");
         String[] pathArray = pathList.split(",");
         adapter = new TagImageAdapter(pathArray);
-        list.setAdapter(adapter);
+        list.setAdapter(adapter);*/
+        retrieveDataFromCloud();
 
     }
 
@@ -209,5 +237,56 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             return row;
 
         }
+    }
+
+    private void doSomethingonCloud()
+    {
+        AVObject testObject = new AVObject("Tainy_Test_The_Object");
+        testObject.put("key1", "value1");
+        testObject.put("key2", "value2");
+        testObject.put("key3", "value3");
+        testObject.put("key4", "value4");
+        testObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e)
+            {
+
+            }
+        });
+    }
+
+    private void retrieveDataFromCloud()
+    {
+        AVQuery<AVObject> query = new AVQuery<>("Tainy_Test_The_Object");
+        query.whereEqualTo("key2","anotherValue2");
+
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> avObjects, AVException e)
+            {
+                for(AVObject obj:avObjects)
+                {
+                    String id = obj.getString("objectId");
+                    String value2 = obj.getString("key2");
+                }
+
+            }
+        });
+/*        try {
+            query.find
+            List<AVObject> list = query.find();
+            for(AVObject obj:list)
+            {
+                String id = obj.getString("objectId");
+                String key1 = obj.getString("key1");
+                Date createDate = obj.getDate("createdAt");
+                Date updateDate = obj.getDate("updatedAt");
+            }
+
+        } catch (AVException e) {
+            e.printStackTrace();
+        }*/
+
+
     }
 }
