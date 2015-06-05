@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -79,7 +80,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private void search(String name)
     {
 //        SharedPreferences sp = this.getSharedPreferences("TagActivity",MODE_PRIVATE);
-        retrieveDataFromCloud();
+//        retrieveDataFromCloud();
 
     }
 
@@ -241,9 +242,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_SEND);
+                        intent.setAction(Intent.ACTION_VIEW);
                         Uri uri = Uri.fromFile(file);
                         intent.setDataAndType(uri, "image/*");
+                        Log.d("","");
                         startActivity(intent);
                     }
                 });
@@ -270,7 +272,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             }
         });
     }
-
+/*
     private void retrieveDataFromCloud()
     {
         AVQuery<AVObject> query = new AVQuery<>("Tainy_Test_The_Object");
@@ -287,7 +289,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 }
 
             }
-        });
+        });*/
 /*        try {
             query.find
             List<AVObject> list = query.find();
@@ -301,8 +303,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         } catch (AVException e) {
             e.printStackTrace();
-        }*/
+        }
 
 
-    }
+    }*/
 }

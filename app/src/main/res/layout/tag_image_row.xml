@@ -25,4 +25,10 @@
             android:layout_marginLeft="15dp"
             />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/holo_blue_bright"
+        />
+
 </LinearLayout>
