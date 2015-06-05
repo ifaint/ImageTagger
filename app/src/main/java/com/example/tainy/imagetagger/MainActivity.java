@@ -3,8 +3,12 @@ package com.example.tainy.imagetagger;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -101,7 +105,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             i++;
         }
-        populateText(ll_tags,tvs,this);
+        populateText(ll_tags, tvs, this);
 
     }
 
@@ -237,7 +241,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             if(!pathArray[position].isEmpty())
             {
                 final File file = new File(pathArray[position]);
-                iv_snap.setImageDrawable(Drawable.createFromPath(pathArray[position]));
+                setImage(iv_snap, pathArray[position]);
+//                iv_snap.setImageDrawable(Drawable.createFromPath(pathArray[position]));
                 iv_snap.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -255,6 +260,19 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             return row;
 
         }
+    }
+
+    private void setImage(ImageView iv_snap,String path)
+    {
+        if(path.endsWith("mp4"))
+        {
+            Bitmap bm = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MINI_KIND);
+            if(bm !=null)
+                iv_snap.setImageBitmap(bm);
+        }
+        else
+            iv_snap.setImageDrawable(Drawable.createFromPath(path));
+
     }
 
     private void doSomethingonCloud()
